@@ -89,6 +89,11 @@
 
     /* Print-specific styles */
     @media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -98,17 +103,16 @@
   }
 
   #billOutput {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 5in;
     height: 5in;
-    box-sizing: border-box;
-    padding: 0.5in;
+    padding: 0.25in;
     background: white;
-    margin: 0;
-    box-shadow: none;
+    box-sizing: border-box;
     border: 1px solid #000;
+    overflow: hidden;
   }
 
   #billOutput button {
