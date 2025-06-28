@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golden Chicken and Mutton Center</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f8f8f8;
+    }
+    header {
+      background-color: #8B0000;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    section {
+      padding: 2rem 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #8B0000;
+      border-bottom: 2px solid #8B0000;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .card-content {
+      padding: 1rem;
+      flex-grow: 1;
+    }
+    .card-content h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .card-content p {
+      color: #666;
+    }
+    footer {
+      background-color: #8B0000;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+    .cta {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .cta button {
+      background-color: #8B0000;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cta button:hover {
+      background-color: #a40000;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Print-specific styles */
+    @media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #billOutput, #billOutput * {
+    visibility: visible;
+  }
+
+  #billOutput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5in;
+    height: 5in;
+    box-sizing: border-box;
+    padding: 0.5in;
+    background: white;
+    margin: 0;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  #billOutput button {
+    display: none;
+  }
+
+  @page {
+    size: 5in 5in;
+    margin: 0;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Golden Chicken and Mutton Center</h1>
+    <p>Fresh cuts. Best quality. Delivered to your door.</p>
+  </header>
+
+  <section>
+    <h2>Chicken Products</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="" alt="Raw Chicken">
+        <div class="card-content">
+          <h3>Fresh Whole Chicken</h3>
+          <p>Cleaned and ready to cook. 1.5 kg approx.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="" alt="Chicken Curry Cuts">
+        <div class="card-content">
+          <h3>Curry Cut</h3>
+          <p>Perfectly sized for your favorite curries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mutton Products</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://source.unsplash.com/400x300/?raw-mutton" alt="Raw Mutton">
+        <div class="card-content">
+          <h3>Live Goat</h3>
+          <p>Price per kg:<br>
+            Male Sheep: Rs ___ <br>
+            Female Sheep: Rs ___
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://source.unsplash.com/400x300/?mutton-curry" alt="Mutton Curry Cut">
+        <div class="card-content">
+          <h3>Mutton</h3>
+          <p>₹840 per kg</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Order Now</h2>
+    <p>Contact us to get the best quality chicken and mutton delivered on order</p>
+    <button onclick="window.location.href='tel:+916304571430'">Call / WhatsApp</button>
+  </section>
+
+  <section>
+    <h2>Generate In-Person Bill</h2>
+    <form id="billForm">
+      <label>Customer Name:<br><input type="text" id="customerName" required></label><br><br>
+      <label>Product:<br><input type="text" id="product" required></label><br><br>
+      <label>Quantity (kg):<br><input type="number" id="quantity" required></label><br><br>
+      <label>Price per kg (₹):<br><input type="number" id="pricePerKg" required></label><br><br>
+      <button type="button" onclick="generateBill()">Generate Bill</button>
+    </form>
+
+    <div id="billOutput" class="hidden" style="background-color:#fff; margin-top:1rem; padding:1rem; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <h3>Bill Receipt</h3>
+      <p id="billDetails"></p>
+      <button type="button" onclick="window.print()">Print Bill</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Golden Chicken and Mutton Center. All rights reserved.
+  </footer>
+
+  <script>
+    function generateBill() {
+      const name = document.getElementById('customerName').value.trim();
+      const product = document.getElementById('product').value.trim();
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const pricePerKg = parseFloat(document.getElementById('pricePerKg').value);
+      const total = (quantity * pricePerKg).toFixed(2);
+
+      const details = `
+        <strong>Golden Chicken and Mutton Center</strong><br>
+        Customer Name: <strong>${name}</strong><br>
+        Product: <strong>${product}</strong><br>
+        Quantity: <strong>${quantity} kg</strong><br>
+        Price per kg: <strong>₹${pricePerKg}</strong><br>
+        <hr>
+        <strong>Total: ₹${total}</strong><br>
+        <em>Thank you for your purchase!</em>
+      `;
+
+      document.getElementById('billDetails').innerHTML = details;
+      document.getElementById('billOutput').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
