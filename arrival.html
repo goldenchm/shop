@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animal Arrival Records</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background-color: #f8f8f8;
+    }
+    h1, h2 {
+      color: #8B0000;
+    }
+    section {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    input, select, button {
+      padding: 0.5rem;
+      width: 100%;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    .hidden {
+      display: none;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Animal Arrival Records</h1>
+
+  <section>
+    <h2>Add New Arrival</h2>
+    <label>Date:
+      <input type="date" id="arrivalDate" required>
+    </label>
+    <label>Animal Type:
+      <input type="text" id="animalType" placeholder="e.g. Goat, Sheep" required>
+    </label>
+    <label>Count:
+      <input type="number" id="animalCount" min="1" required>
+    </label>
+    <button onclick="saveArrival()">Save Arrival</button>
+    <p id="saveMsg" style="color:green;"></p>
+  </section>
+
+  <section>
+    <h2>View Arrivals by Date</h2>
+    <label>Select Date:
+      <input type="date" id="viewDate">
+    </label>
+    <button onclick="loadArrivals()">Show Arrivals</button>
+
+    <div id="arrivalList" class="hidden">
+      <h3>Arrivals on <span id="selectedDate"></span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Animal</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody id="arrivalTableBody"></tbody>
+      </table>
+      <button onclick="printArrivals()">Print Report</button>
+    </div>
+  </section>
+
+  <div id="printArea" class="hidden">
+    <h2>Arrival Report</h2>
+    <p>Date: <span id="printDate"></span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Animal</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    function saveArrival() {
+      const date = document.getElementById('arrivalDate').value;
+      const animal = document.getElementById('animalType').value.trim();
+      const count = parseInt(document.getElementById('animalCount').value, 10);
+
+      if (!date || !animal || isNaN(count) || count < 1) {
+        alert('Please fill all fields correctly.');
+        return;
+      }
+
+      const key = 'arrivals_' + date;
+      let arrivals = JSON.parse(localStorage.getItem(key)) || [];
+      arrivals.push({ animal, count });
+      localStorage.setItem(key, JSON.stringify(arrivals));
+
+      document.getElementById('saveMsg').textContent = 'Saved!';
+      setTimeout(() => document.getElementById('saveMsg').textContent = '', 2000);
+
+      document.getElementById('arrivalDate').value = '';
+      document.getElementById('animalType').value = '';
+      document.getElementById('animalCount').value = '';
+    }
+
+    function loadArrivals() {
+      const date = document.getElementById('viewDate').value;
+      if (!date) {
+        alert('Please select a date.');
+        return;
+      }
+
+      const key = 'arrivals_' + date;
+      const arrivals = JSON.parse(localStorage.getItem(key)) || [];
+
+      const tbody = document.getElementById('arrivalTableBody');
+      tbody.innerHTML = '';
+      arrivals.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.animal}</td><td>${item.count}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('selectedDate').textContent = date;
+      document.getElementById('arrivalList').classList.remove('hidden');
+
+      // prepare print data
+      document.getElementById('printDate').textContent = date;
+      const printTbody = document.getElementById('printTableBody');
+      printTbody.innerHTML = '';
+      arrivals.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.animal}</td><td>${item.count}</td>`;
+        printTbody.appendChild(tr);
+      });
+    }
+
+    function printArrivals() {
+      document.getElementById('printArea').classList.remove('hidden');
+      window.print();
+      document.getElementById('printArea').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
